@@ -1,16 +1,29 @@
-interface Sns {
-  name: string
-  url: string
+import { WebClient, ChatPostMessageResponse } from '@slack/web-api';
 
-  notify(distributed: Distributed): Promise<void>
+interface Sns {
+  name: string;
+  token?: string;
+  url?: string;
 }
 
-// module Slack implements Sns {
-//   name = 'slack';
-//   url = '';
+interface SnsNotifiable<Response> {
+  notify(distributed: Distributed): Promise<Response>;
+}
 
-//   notify(distributed: Distributed): Promise<void> {
-//     return new Promise((resolve, reject) => {
-//     });
-//   }
-// }
+class Slack implements Sns, SnsNotifiable<ChatPostMessageResponse> {
+  name = 'slack';
+  token = process.env['SLACK_TOKEN'];
+
+  notify(distributed: Distributed): Promise<ChatPostMessageResponse> {
+    const client = new WebClient(this.token);
+    const channelId = '';
+    const message = '';
+    return client.chat.postMessage({
+      channel: channelId,
+      text: message,
+    });
+  }
+}
+
+class Chatwork implements Sns, SnsNotifiable<ChatPostMessageResponse> {
+}
