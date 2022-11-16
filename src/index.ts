@@ -25,7 +25,7 @@ function main() {
   Messages
     .search('label: Wantedly is:unread')
     .distributeByUsername(usernames)
-    .forEach((username, messages) => {
+    .forEach((username, _messages) => {
       const kindOfMessage = {
         'message-noreply': 'DM',
         'scout-message-noreply': 'new scout message',
