@@ -1,7 +1,8 @@
 import Todoist from './todoist';
 import Messages from './messages';
 
-type GmailMessage = GoogleAppsScript.Gmail.GmailMessage;
+import moment from 'moment';
+import 'moment/locale/ja';
 
 const usernames = [
   'message-noreply',
@@ -17,16 +18,19 @@ function main() {
 
   const todoist = Todoist.fromToken(token);
 
+  const replyingLimit = moment()
+    .add(23, 'hours')
+    .format('YYYY-MM-DD HH:00');
+
   Messages
     .search('label: Wantedly is:unread')
     .distributeByUsername(usernames)
     .forEach((username, messages) => {
       const kindOfMessage = {
-        'message-noreply': 'ダイレクトメッセージ',
-        'scout-message-noreply': 'スカウトメッセージ',
+        'message-noreply': 'DM',
+        'scout-message-noreply': 'new scout message',
       }[username] || 'unknown';
 
-      const replyingLimit = '';
       const task = `${replyingLimit} Reply Wantedly ${kindOfMessage} messages`;
       todoist.addTask({ projectId: projectId, task: task });
     });
