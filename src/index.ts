@@ -1,54 +1,12 @@
 import Todoist from './todoist';
-
-const usernames = ['message-noreply', 'scout-message-noreply'];
+import Messages from './messages';
 
 type GmailMessage = GoogleAppsScript.Gmail.GmailMessage;
 
-type DistributedT = { [key: string]: GmailMessage[] };
-
-class Distributed {
-  value: DistributedT;
-
-  constructor(value: DistributedT) {
-    this.value = value;
-  }
-
-  forEach(proc: (username: string, messages: GmailMessage[]) => void): void {
-    Object.keys(this.value).forEach(username => {
-      const messages = this.value[username];
-      proc(username, messages);
-    });
-  }
-}
-
-class Messages {
-  value: GmailMessage[]
-
-  constructor(value: GmailMessage[]) {
-    this.value = value;
-  }
-
-  static search(query: string): Messages {
-    const value = GmailApp.search(query).flatMap(thread => thread.getMessages());
-    return new Messages(value);
-  }
-
-  distributeByUsername(usernames: string[]): Distributed {
-    return new Distributed(this.value.reduce((acc: DistributedT, message) => {
-      for (const username in usernames) {
-        if (message.getFrom().includes(username)) {
-          if (!acc[username]) {
-            acc[username] = [message];
-          } else {
-            acc[username].push(message);
-          }
-          break;
-        }
-      }
-      return acc;
-    }, {}));
-  }
-}
+const usernames = [
+  'message-noreply',
+  'scout-message-noreply',
+];
 
 function main() {
   const token = PropertiesService.getScriptProperties().getProperty('TODOIST_TOKEN');
